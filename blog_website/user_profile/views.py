@@ -11,7 +11,9 @@ from .models import user
 
 from .forms import (
     UserRegistrationForm,
-    LoginForm
+    LoginForm,
+    UserProfileUpdateForm,
+    ProfilePictureUpdateForm,
 )
 
 
@@ -64,25 +66,51 @@ def register_user(request):
     return render(request, 'registration.html',context)
 
 
+@login_required
+def change_profile_picture(request):
+   
+    if request.method == "POST":
+        
+        form = ProfilePictureUpdateForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            # user = get_object_or_404(user , pk=request.user.pk)
+            loggedin_user = get_object_or_404(user, pk=request.user.pk)
+            image = request.FILES['profile_image']
+            
+            if request.user.pk != loggedin_user.pk:
+                return redirect('home')
+
+            loggedin_user.profile_image = image
+            loggedin_user.save()
+            messages.success(request, "Profile image updated successfully")
+
+        else:
+            print(form.errors)
+
+    return redirect('profile')
+
+
 @login_required(login_url='login')
 def profile(request):
     account = get_object_or_404(user, pk=request.user.pk)
-    # form = UserProfileUpdateForm(instance=account)
+    form = UserProfileUpdateForm(instance=account)
     
-    # if request.method == "POST":
-    #     if request.user.pk != account.pk:
-    #         return redirect('home')
+    if request.method == "POST":
+        if request.user.pk != account.pk:
+            return redirect('home')
         
-    #     form = UserProfileUpdateForm(request.POST, instance=account)
-    #     if form.is_valid():
-    #         form.save()
-    #         messages.success(request, "Profile has been updated sucessfully")
-    #         return redirect('profile')
-    #     else:
-    #         print(form.errors)
+        form = UserProfileUpdateForm(request.POST, instance=account)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile has been updated sucessfully")
+            return redirect('profile')
+        else:
+            print(form.errors)
 
     context = {
         "account": account,
-        # "form": form
+        "form": form
     }
     return render(request, 'profile.html', context)
+

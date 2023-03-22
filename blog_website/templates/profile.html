@@ -12,7 +12,7 @@
                     <img src="{{request.user.get_profile_picture}}" class="rounded rounded-circle profile-picture">
                     <ul class="text-center py-3">
                         <li class="py-2">
-                            <span>Posts: <strong>100</strong></span>
+                            <span>Posts: <strong>{{account.user_blogs.count}}</strong></span>
                         </li>
                         <li class="py-2">
                             <span>Follwers: <strong>100</strong></span>
@@ -37,28 +37,27 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>    
                         </div>
                             <div class="modal-body">
-                                <form action="">
+                                <form action="{% url 'change_profile_picture' %}" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
                                     <div class="form-group">
-                                        <input class="form-control" type="file" name = "profile_image">
+                                        <input class="form-control" type="file" name = "profile_image" required>
                                     </div>
+                                    <div class="form-group"><button type="submit" class="btn btn-primary">Save changes</button></div>
                                 </form>
                             </div>
-                            <div class="modal-footer">
                             
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                            </div>
                         </div>
                         </div>
                     </div>
                 </div>
                 <ul class="list-group text-center mt-2 mb-5">
                     <li class="list-group-item my-1">
-                        <a class="text-decoration-none" href="#">
+                        <a class="text-decoration-none" href="{% url 'my_blogs' %}">
                             My Blogs
                         </a>
                     </li>
                     <li class="list-group-item my-1">
-                        <a class="text-decoration-none" href="#">
+                        <a class="text-decoration-none" href="{% url 'add_blog' %}">
                             Add Blog
                         </a>
                     </li>
